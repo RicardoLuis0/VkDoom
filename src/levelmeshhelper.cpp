@@ -3,22 +3,56 @@
 #include "r_defs.h"
 #include "g_levellocals.h"
 
-template<typename Self, typename Fn, typename... Args>
-void PropagateCorrelations(Self self, Fn fn, sector_t *sector, Args... args)
+template<typename T, typename... Other>
+constexpr T First(T val, Other ... other)
 {
-	(self->*fn)(sector, args...);
-	
+	return val;
+}
+
+template<bool checkMidTex = false, typename Self, typename Fn, typename T, typename... Args>
+void PropagateCorrelations(Self self, Fn fn, T *in, Args... args) //requires (std::is_same_v<T, sector_t> || std::is_same_v<T, side_t>)
+{
+	sector_t * sector;
+
+	if constexpr(std::is_same_v<T, sector_t>)
+	{
+		sector = in;
+	}
+	else
+	{
+		sector = in->sector;
+	}
+
+	(self->*fn)(in, args...);
+
+	if constexpr(checkMidTex)
+	{
+		// if midtex changed, and is a 3d floor that should use the midtexture (and not the line itself's upper/lower), propagate change to all lines in affected sectors
+		if(First<Args...>(args...) != 1 || !sector->Sec3dControlUseMidTex) return;
+	}
+
 	TArray<int>* c = sector->Level->SecCorrelations.CheckKey(sector->Index());
 
 	if(c)
 	{
 		for(int index : *c)
 		{
-			(self->*fn)(&sector->Level->sectors[index], args...);
+			if constexpr(std::is_same_v<T, sector_t>)
+			{
+				(self->*fn)(&sector->Level->sectors[index], args...);
+			}
+			else
+			{
+				for(auto line : sector->Level->sectors[index].Lines)
+				{
+					(self->*fn)(line->sidedef[0], args...); // should only need the first side?
+					// (self->*fn)(&line->sidedef[1], section);
+				}
+			}
 		}
 	}
-
 }
+
 
 void UpdateLevelMesh::FloorHeightChanged(sector_t* sector)
 {
@@ -51,21 +85,7 @@ void UpdateLevelMesh::SectorChangedOther(sector_t* sector)
 
 void UpdateLevelMesh::SideTextureChanged(side_t* side, int section)
 {
-	OnSideTextureChanged(side, section);
-
-	TArray<int>* c = side->sector->Level->SecCorrelations.CheckKey(side->sector->Index());
-	// if midtex changed, and is a 3d floor that should use the midtexture (and not the line itself's upper/lower), propagate change to all lines in affected sectors
-	if(c && section == 1 && side->sector->Sec3dControlUseMidTex)
-	{
-		for(int index : *c)
-		{
-			for(auto line : side->sector->Level->sectors[index].Lines)
-			{
-				OnSideTextureChanged(line->sidedef[0], section); // should only need the first side?
-				// OnSideTextureChanged(&line->sidedef[1], section);
-			}
-		}
-	}
+	PropagateCorrelations<true>(this, &UpdateLevelMesh::OnSideTextureChanged, side, section);
 }
 
 void UpdateLevelMesh::SideDecalsChanged(side_t* side)
