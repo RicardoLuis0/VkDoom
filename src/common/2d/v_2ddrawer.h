@@ -151,10 +151,12 @@ public:
 		int shape2DBufIndex;
 		int shape2DIndexCount;
 		int shape2DCommandCounter;
+		MaterialLayerSampling mOverrideFilter;
 
 		RenderCommand()
 		{
 			memset((void*)this, 0,  sizeof(*this));
+			mOverrideFilter = MaterialLayerSampling::Default;
 		}
 
 		// If these fields match, two draw commands can be batched.
@@ -179,6 +181,7 @@ public:
 				mColor1.d == other.mColor1.d &&
 				useTransform == other.useTransform &&
 				mScreenFade == other.mScreenFade &&
+				mOverrideFilter == other.mOverrideFilter &&
 				(
 					!useTransform ||
 					(

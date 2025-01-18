@@ -346,7 +346,7 @@ VkMaterial::DescriptorEntry& VkMaterial::GetDescriptorEntry(const FMaterialState
 	MaterialLayerInfo *layer;
 	auto systex = static_cast<VkHardwareTexture*>(GetLayer(0, state.mTranslation, &layer));
 	auto systeximage = systex->GetImage(layer->layerTexture, state.mTranslation, layer->scaleFlags);
-	int bindlessIndex = descriptors->AddBindlessTextureIndex(systeximage->View.get(), fb->GetSamplerManager()->Get(GetLayerFilter(0), clampmode));
+	int bindlessIndex = descriptors->AddBindlessTextureIndex(systeximage->View.get(), fb->GetSamplerManager()->Get(int(state.mOverrideFilter) >= 0 ? state.mOverrideFilter : GetLayerFilter(0), clampmode));
 
 	if (!(layer->scaleFlags & CTF_Indexed))
 	{
@@ -354,7 +354,7 @@ VkMaterial::DescriptorEntry& VkMaterial::GetDescriptorEntry(const FMaterialState
 		{
 			auto syslayer = static_cast<VkHardwareTexture*>(GetLayer(i, 0, &layer));
 			auto syslayerimage = syslayer->GetImage(layer->layerTexture, 0, layer->scaleFlags);
-			descriptors->AddBindlessTextureIndex(syslayerimage->View.get(), fb->GetSamplerManager()->Get(GetLayerFilter(i), clampmode));
+			descriptors->AddBindlessTextureIndex(syslayerimage->View.get(), fb->GetSamplerManager()->Get((int(state.mOverrideFilter) >= 0 && i < NumNonMaterialLayers()) ? state.mOverrideFilter : GetLayerFilter(i), clampmode));
 		}
 
 		if(*globalshader)
@@ -378,7 +378,7 @@ VkMaterial::DescriptorEntry& VkMaterial::GetDescriptorEntry(const FMaterialState
 		{
 			auto syslayer = static_cast<VkHardwareTexture*>(GetLayer(i, translation, &layer));
 			auto syslayerimage = syslayer->GetImage(layer->layerTexture, 0, layer->scaleFlags);
-			descriptors->AddBindlessTextureIndex(syslayerimage->View.get(), fb->GetSamplerManager()->Get(GetLayerFilter(i), clampmode));
+			descriptors->AddBindlessTextureIndex(syslayerimage->View.get(), fb->GetSamplerManager()->Get(int(state.mOverrideFilter) >= 0 ? state.mOverrideFilter : GetLayerFilter(i), clampmode));
 		}
 	}
 

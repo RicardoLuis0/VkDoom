@@ -12,7 +12,8 @@ struct FMaterialState
 	int mTranslation = CLAMP_NONE;
 	int mOverrideShader = -1;
 	bool mChanged = false;
-	GlobalShaderAddr globalShaderAddr = {0, 3, 0}; // null global shader entry, TODO
+	GlobalShaderAddr globalShaderAddr = {0, 3, 0};
+	MaterialLayerSampling mOverrideFilter = MaterialLayerSampling::Default; // override filter for non-custom layers
 
 	void Reset()
 	{
@@ -22,5 +23,6 @@ struct FMaterialState
 		mOverrideShader = -1;
 		mChanged = false;
 		globalShaderAddr = {0, 3, 0};
+		mOverrideFilter = MaterialLayerSampling::Default;
 	}
 };

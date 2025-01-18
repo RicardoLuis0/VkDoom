@@ -36,11 +36,12 @@ CVAR(Bool, gl_customshader, true, 0);
 TArray<UserShaderDesc> usershaders;
 
 
-void FRenderState::SetMaterial(FMaterial *mat, int clampmode, int translation, int overrideshader, PClass *cls)
+void FRenderState::SetMaterial(FMaterial *mat, int clampmode, int translation, int overrideshader, PClass *cls, MaterialLayerSampling overridefilter)
 {
 	mMaterial.mMaterial = mat;
 	mMaterial.mClampMode = clampmode;
 	mMaterial.mTranslation = translation;
+	mMaterial.mOverrideFilter = overridefilter;
 	if(overrideshader >= FIRST_USER_SHADER)
 	{
 		mMaterial.mOverrideShader = overrideshader;
