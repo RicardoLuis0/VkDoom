@@ -1273,6 +1273,7 @@ void D_DoomLoop ()
 			}
 			I_SetFrameTime();
 
+			ClearDebugLinesPlay();
 			// process one or more tics
 			if (singletics)
 			{

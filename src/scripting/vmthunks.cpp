@@ -2979,3 +2979,30 @@ DEFINE_FIELD(DBaseStatusBar, itemflashFade);
 
 
 DEFINE_GLOBAL(StatusBar);
+
+#include "rendering/hwrenderer/scene/hw_drawinfo.h"
+
+static void AddDebugLine(double x1, double y1, double z1, double x2, double y2, double z2, int color, int doDepthTest)
+{
+	DebugLine l;
+	l.start = DVector3(x1, y1, z1);
+	l.end = DVector3(x2, y2, z2);
+	l.color = PalEntry(color);
+	l.doDepth = doDepthTest;
+	AddDebugLinePlay(l);
+}
+
+DEFINE_ACTION_FUNCTION_NATIVE(DObject, AddDebugLine, AddDebugLine)
+{
+	PARAM_PROLOGUE;
+	PARAM_FLOAT(x1);
+	PARAM_FLOAT(y1);
+	PARAM_FLOAT(z1);
+	PARAM_FLOAT(x2);
+	PARAM_FLOAT(y2);
+	PARAM_FLOAT(z2);
+	PARAM_INT(color);
+	PARAM_BOOL(doDepthTest);
+	AddDebugLine(x1, y1, z1, x2, y2, z2, color, doDepthTest);
+	return 0;
+}

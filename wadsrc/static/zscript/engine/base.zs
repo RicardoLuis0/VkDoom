@@ -765,6 +765,8 @@ class Object native
 	private native static Function<void> BuiltinFunctionPtrCast(Function<void> inptr, voidptr newtype);
 	private native static void HandleDeprecatedFlags(Object obj, bool set, int index);
 	private native static bool CheckDeprecatedFlags(Object obj, int index);
+
+	native static play bool AddDebugLine(Vector3 p1, Vector3 p2, Color lineColor, bool doDepthTest);
 	
 	native static uint MSTime();
 	native static double MSTimeF();
