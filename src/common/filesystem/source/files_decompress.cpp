@@ -214,7 +214,7 @@ public:
 
 		if (err != Z_OK && err != Z_STREAM_END)
 		{
-			DecompressionError ("Corrupt zlib stream");
+			DecompressionError ("Corrupt zlib stream, error: %s (%d)", zError(err), err);
 			return 0;
 		}
 
@@ -330,7 +330,7 @@ public:
 
 		if (err != BZ_OK && err != BZ_STREAM_END)
 		{
-			DecompressionError ("Corrupt bzip2 stream");
+			DecompressionError ("Corrupt bzip2 stream: (%d)", err);
 			return 0;
 		}
 
@@ -471,14 +471,14 @@ public:
 			len = (long)(len - out_processed);
 			if (err != SZ_OK)
 			{
-				DecompressionError ("Corrupt LZMA stream");
+				DecompressionError ("Corrupt LZMA stream: (error %d)", err);
 				return 0;
 			}
 			if (in_processed == 0 && out_processed == 0)
 			{
 				if (status != LZMA_STATUS_FINISHED_WITH_MARK)
 				{
-					DecompressionError ("Corrupt LZMA stream");
+					DecompressionError ("Corrupt LZMA stream: (status %d)", status);
 					return 0;
 				}
 			}
@@ -490,7 +490,7 @@ public:
 
 		if (err != Z_OK && err != Z_STREAM_END)
 		{
-			DecompressionError ("Corrupt LZMA stream");
+			DecompressionError ("Corrupt LZMA stream: (error %d)", err);
 			return 0;
 		}
 
@@ -606,14 +606,14 @@ public:
 			len = (long)(len - out_processed);
 			if (err != SZ_OK)
 			{
-				DecompressionError ("Corrupt XZ stream", err);
+				DecompressionError ("Corrupt XZ stream: (error %d)", err);
 				return 0;
 			}
 			if (in_processed == 0 && out_processed == 0)
 			{
 				if (status != CODER_STATUS_FINISHED_WITH_MARK)
 				{
-					DecompressionError ("Corrupt XZ stream");
+					DecompressionError ("Corrupt XZ stream: (status %d)", status);
 					return 0;
 				}
 			}
@@ -625,7 +625,7 @@ public:
 
 		if (err != Z_OK && err != Z_STREAM_END)
 		{
-			DecompressionError ("Corrupt XZ stream");
+			DecompressionError ("Corrupt XZ stream: (error %d)", err);
 			return 0;
 		}
 
